@@ -1,0 +1,7 @@
+ngx_addon_name=ngx_http_test_module;
+HTTP_MODULES="$HTTP_MODULES ngx_http_test_module";
+NGX_ADDON_SRCS="$NGX_ADDON_SRCS $ngx_addon_dir/ngx_http_test_module.c $ngx_addon_dir/test.cpp";
+NGX_ADDON_DEPS="$NGX_ADDON_DEPS $ngx_addon_dir/test.h";
+CORE_LIBS="$CORE_LIBS -lm";
+CORE_INCS="$CORE_INCS $ngx_addon_dir";
+CFLAGS="$CFLAGS -O2";

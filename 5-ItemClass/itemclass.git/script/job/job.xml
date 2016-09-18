@@ -1,0 +1,83 @@
+//作业配置
+//版本：1.0
+
+//模块配置
+<mod>
+	//模块名称
+	<name>term_weight</name>
+	//工作目录
+	<dir>/home/rd/work/term_weight/work</dir>
+	//
+	<log_path>/home/rd/work/term_weight/log</log_path>
+	//模块维护者，以接收报警邮件
+	<owner>zhangyong@koudai.com</owner>
+	//
+	<hdfs_dir>/user/rd/ubs/term_weight</hdfs_dir>
+	//指定需要运行的任务
+	<task_run>title_seg, cid_count, cid_ratio, cid_term_count, term_bayes, term_fisher</task_run>
+</mod>
+
+<task>
+	//任务名称
+	<code>title_seg</code>
+	<queue>online</queue>
+	//采用相对路径
+	<mapper>sh -x work/word_seg.sh</mapper>
+	<reducer></reducer>
+	
+	//多个输入以逗号分隔
+	<input_files>/user/rd/product-group/product-info/part-*, /user/rd/ubs/term_weight/extra_box/*.list</input_files>
+	//输出的HDFS路径
+	<output>/user/rd/ubs/term_weight/title_seg</output>
+	<task_num>101</task_num>
+</task>
+
+<task>
+	<code>cid_count</code>
+	<queue>online</queue>
+	<mapper>sh -x work/cid_count_map.sh</mapper>
+	<reducer>sh -x work/cid_count_reduce.sh</reducer>
+	<input_files>/user/rd/ubs/term_weight/title_seg/part-*</input_files>
+	<output>/user/rd/ubs/term_weight/cid_count</output>
+	<task_num>11</task_num>
+</task>
+
+<task>
+	<code>cid_ratio</code>
+	<queue>online</queue>
+	<mapper>cat</mapper>
+	<reducer>sh -x work/cid_ratio.sh</reducer>
+	<input_files>/user/rd/ubs/term_weight/cid_count/part-*</input_files>
+	<output>/user/rd/ubs/term_weight/cid_ratio</output>
+	<task_num>1</task_num>
+</task>
+
+<task>
+	<code>cid_term_count</code>
+	<queue>online</queue>
+	<mapper>sh -x work/cid_term_count_map.sh</mapper>
+	<reducer>sh -x work/cid_term_count_reduce.sh</reducer>
+	<input_files>/user/rd/ubs/term_weight/title_seg/part-*, /user/rd/ubs/term_weight/cid_ratio/part-*</input_files>
+	<output>/user/rd/ubs/term_weight/cid_term_count</output>
+	<task_num>991</task_num>
+</task>
+
+<task>
+	<code>term_bayes</code>
+	<queue>online</queue>
+	<mapper>sh -x work/term_bayes_map.sh</mapper>
+	<reducer>sh -x work/term_bayes_reduce.sh</reducer>
+	<input_files>/user/rd/ubs/term_weight/cid_term_count/part-*</input_files>
+	<output>/user/rd/ubs/term_weight/term_bayes</output>
+	<task_num>991</task_num>
+</task>
+
+<task>
+	<code>term_fisher</code>
+	<queue>online</queue>
+	<mapper>sh -x work/term_fisher_map.sh</mapper>
+	<reducer>sh -x work/term_fisher_reduce.sh</reducer>
+	<input_files>/user/rd/ubs/term_weight/cid_term_count/part-*</input_files>
+	<output>/user/rd/ubs/term_weight/term_fisher</output>
+	<task_num>991</task_num>
+</task>
